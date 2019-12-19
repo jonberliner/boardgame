@@ -1,7 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from copy import copy, deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from numbers import Number
 from typing import (
     Optional,
@@ -25,17 +25,16 @@ from uuid import (
     UUID)
 import itertools
 
+import numpy as np
 from numpy.random import RandomState
-from numpy import ndarray
-from numpy import array as nparray
 
 # I think typevar differs from type in that they're strictly for
 # type checks, and cannot be called
 T = TypeVar('T')  # for generics
 # for easier casting
-array_likes = (list, tuple, nparray)
+array_likes = (list, tuple, np.array)
 # aliases
-Array = TypeVar('Array', List, Tuple, ndarray)
+Array = TypeVar('Array', List, Tuple, np.ndarray)
 SingleOrArray = TypeVar('SingleOrArray', Array, Text, Number)
 Location = NewType('Location', SingleOrArray)
 UName = NewType('UName', Text)
@@ -51,15 +50,24 @@ def to_array(x: SingleOrArray,
 
 
 # the generic for stuff in the game universe
-@dataclass
-class GameObject:
-    rng_seed: int = field(default_factory=lambda: randint(0, 1000000000))
-    rng: RandomState = field(init=False)
-    uuid: UUID = field(default_factory=uuid4)
-    uname: Optional[UName] = None
+# TODO: figure out solution for inheriting with default values with dataclass
+def tag_game_object(fn):
+    def inner(self, rng_seed=None):
+        rng = RandomState(rng)
 
-    def __post_init__(self) -> None:
+
+
+@dataclass
+class GameObject(ABC):
+    # NOTE: all init=False to get around inheritance issues
+    rng_seed: int = field(init=False)
+    rng: RandomState = field(init=False)
+    uuid: UUID = field(init=False)
+
+    def __post_init__(self):
+        self.rng_seed = randint(0, int(1e9))
         self.rng = RandomState(self.rng_seed)
+        self.uuid = uuid4()
 
     def copy(self) -> GameObject:
         return copy(self)
@@ -80,30 +88,55 @@ class GameObject:
     def to_array(self, *args, **kwargs):
         return to_array(*args, **kwargs)
 
+    @property
+    def public_attrs(self):
+        return [attr for attr in dir(self) if not attr.startswith('_')]
+
+def game_object(overwrite=True):
+    "add the attributes in GameObject to an obj after instantiating cls"
+    def decorator(cls):
+        def wrapper(*args, **kwargs):
+            obj = cls(*args, **kwargs)
+            game_obj = GameObject()
+            for attr in game_obj.public_attrs:
+                if not overwrite and hasattr(obj, attr):
+                    continue
+                setattr(obj, attr, getattr(game_obj, attr))
+            return obj
+        return wrapper
+    return decorator
+
+
 G = TypeVar("G", bound=GameObject)
 
 ## PLAYERS
-class Player(GameObject):
+@game_object()
+@dataclass
+class Player:
     name: str
 
 
+@dataclass
 class Piece(GameObject):
     """A piece is something that can be placed on the board, and which players
     may use to perform actions in actions"""
     actions: Collection[Action]
 
 
+@dataclass
 class Board(GameObject):
     "Board is a generic for the locations available on a board"
     locations: Collection[Location]
 
 
+@dataclass
 class PlayerPieceLocation(GameObject):
     player: Player
     piece: Piece
     location: Location
 
 
+@dataclass
 class GameState(GameObject):
     """base gamestate.  container for getting info about the current game
     not meant to contain logic outside getting / querying its attrs
@@ -173,7 +206,8 @@ class GameState(GameObject):
         return set(self.board.locations)
 
 
-class Action(ABC, GameObject):
+@dataclass
+class Action(GameObject):
     """Action mainly exists to to contain modular logic is_valid,
     which says if this action is true given player wants piece
     to take this action given the current gamestate"""
@@ -194,6 +228,7 @@ class GridBoard(Board):
             itertools.product(*[range(dim) for dim in self.shape]))
 
 
+@dataclass
 class MoveNd(Action):
     """check a valid move in an nd space"""
     # EXAMPLES
@@ -216,21 +251,26 @@ class MoveNd(Action):
     dims: Tuple[int] = field(init=False)
     possible_deltas_per_dim: Dict[int, Array[Number]] = field(init=False)
 
+    def to_dim_array(self, x: SingleOrArray) -> np.ndarray:
+        if isinstance(x, (int, str)):
+            x = [x] * self.dim
+        return self.to_array(x, atype=np.array)
+
     def __post_init__(self):
         self.dims = np.arange(self.dim)
 
-        self.delta_lo = self.to_array(self.delta_lo, nparray)
-        self.delta_hi = self.to_array(self.delta_hi, nparray)
-        self.delta_step = self.to_array(self.delta_step, nparray)
-        self.min_taxi = self.to_array(self.min_taxi, nparray)
-        self.max_taxi = self.to_array(self.max_taxi, nparray)
+        self.delta_lo = self.to_dim_array(self.delta_lo)
+        self.delta_hi = self.to_dim_array(self.delta_hi)
+        self.delta_step = self.to_dim_array(self.delta_step)
+        self.min_taxi = self.to_dim_array(self.min_taxi)
+        self.max_taxi = self.to_dim_array(self.max_taxi)
 
         self.possible_deltas_per_dim = {}
         for dim in self.dims:
             self.possible_deltas_per_dim[dim] = list(range(
-                start=self.delta_lo[dim],
-                stop=self.delta_hi[dim] + self.delta_step[dim],
-                step=self.delta_step[dim]))
+                self.delta_lo[dim],
+                self.delta_hi[dim] + self.delta_step[dim],
+                self.delta_step[dim]))
 
     def isvalid(self, player, piece, gamestate, to_=None, delta_=None):
         """
