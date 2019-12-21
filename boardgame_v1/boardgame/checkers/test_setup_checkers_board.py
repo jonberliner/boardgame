@@ -1,13 +1,10 @@
 from unittest import TestCase
 
-from boardgame_v1.boardgame.boardgame import (
-    Game,
-    Board,
-    Space,
-    Piece,
-    Player,
-)
+from boardgame_v1.boardgame.board import Board
+from boardgame_v1.boardgame.game import Game
 from boardgame_v1.boardgame.checkers.checkers_builder import CheckersBuilder, checker
+from boardgame_v1.boardgame.player import Player
+from boardgame_v1.boardgame.space import Space
 
 
 class TestCreateCheckersGame(TestCase):

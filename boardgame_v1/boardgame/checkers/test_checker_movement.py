@@ -1,7 +1,9 @@
 from unittest import TestCase
 
-from boardgame_v1.boardgame.boardgame import Move, Coord, Player
 from boardgame_v1.boardgame.checkers.checkers_builder import checker
+from boardgame_v1.boardgame.coord import Coord
+from boardgame_v1.boardgame.move import Move
+from boardgame_v1.boardgame.player import Player
 
 
 class TestCheckerMovement(TestCase):

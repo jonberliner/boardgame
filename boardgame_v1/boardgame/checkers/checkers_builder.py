@@ -1,39 +1,16 @@
 from dataclasses import dataclass, replace
 
-from boardgame_v1.boardgame.boardgame import (
-    Game,
-    Board,
-    Piece,
-    Space,
-    Player,
-    MovementType, Vector, Direction)
+from boardgame_v1.boardgame.board import Board
+from boardgame_v1.boardgame.game import Game
+from boardgame_v1.boardgame.checkers.checker import checker
+from boardgame_v1.boardgame.player import Player
+from boardgame_v1.boardgame.space import Space
 
 
 @dataclass
 class ValueObject:
     def copy(self, **kwargs):
         return replace(self, **kwargs)
-
-forward_left_one = MovementType(
-    vectors=[
-        Vector(Direction.UP, -1),
-        Vector(Direction.RIGHT, -1)
-    ]
-)
-forward_right_one = MovementType(
-    vectors=[
-        Vector(Direction.UP, -1),
-        Vector(Direction.RIGHT, 1)
-    ]
-)
-
-checker = lambda player: Piece(
-    player=player,
-    legal_moves=[
-        forward_left_one,
-        forward_right_one,
-    ]
-)
 
 
 @dataclass
