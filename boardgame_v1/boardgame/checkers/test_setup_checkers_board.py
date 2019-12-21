@@ -7,7 +7,7 @@ from boardgame_v1.boardgame.boardgame import (
     Piece,
     Player,
 )
-from boardgame_v1.boardgame.checkers.checkers_builder import CheckersBuilder
+from boardgame_v1.boardgame.checkers.checkers_builder import CheckersBuilder, checker
 
 
 class TestCreateCheckersGame(TestCase):
@@ -15,8 +15,8 @@ class TestCreateCheckersGame(TestCase):
     def test_create_initial_board_state(self):
         player1 = Player("1")
         player2 = Player("2")
-        checker_p1 = lambda: Piece(player=player1)
-        checker_p2 = lambda: Piece(player=player2)
+        checker_p1 = lambda: checker(player=player1)
+        checker_p2 = lambda: checker(player=player2)
 
         checkers = (
            CheckersBuilder(

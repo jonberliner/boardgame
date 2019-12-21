@@ -12,8 +12,8 @@ class TestCheckerMovement(TestCase):
         self.assertTrue(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(0, 0)
+                    start=Coord(1, 1),
+                    end=Coord(0, 0)
                 )
             )
         )
@@ -22,8 +22,8 @@ class TestCheckerMovement(TestCase):
         self.assertTrue(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(0, 2)
+                    start=Coord(1, 1),
+                    end=Coord(0, 2)
                 )
             )
         )
@@ -32,8 +32,8 @@ class TestCheckerMovement(TestCase):
         self.assertFalse(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(0, 1)
+                    start=Coord(1, 1),
+                    end=Coord(0, 1)
                 )
             )
         )
@@ -42,8 +42,8 @@ class TestCheckerMovement(TestCase):
         self.assertFalse(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(2, 0)
+                    start=Coord(1, 1),
+                    end=Coord(2, 0)
                 )
             )
         )
@@ -52,8 +52,8 @@ class TestCheckerMovement(TestCase):
         self.assertFalse(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(2, 2)
+                    start=Coord(1, 1),
+                    end=Coord(2, 2)
                 )
             )
         )
@@ -62,8 +62,8 @@ class TestCheckerMovement(TestCase):
         self.assertFalse(
             self.checker.can_move(
                 Move(
-                    target=Coord(1, 1),
-                    to=Coord(2, 1)
+                    start=Coord(1, 1),
+                    end=Coord(2, 1)
                 )
             )
         )

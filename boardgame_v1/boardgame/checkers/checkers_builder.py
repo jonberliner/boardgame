@@ -6,7 +6,7 @@ from boardgame_v1.boardgame.boardgame import (
     Piece,
     Space,
     Player,
-)
+    MovementType, Vector, Direction)
 
 
 @dataclass
@@ -14,9 +14,25 @@ class ValueObject:
     def copy(self, **kwargs):
         return replace(self, **kwargs)
 
+forward_left_one = MovementType(
+    vectors=[
+        Vector(Direction.UP, 1),
+        Vector(Direction.RIGHT, -1)
+    ]
+)
+forward_right_one = MovementType(
+    vectors=[
+        Vector(Direction.UP, 1),
+        Vector(Direction.RIGHT, 1)
+    ]
+)
 
 checker = lambda player: Piece(
     player=player,
+    legal_moves=[
+        forward_left_one,
+        forward_right_one,
+    ]
 )
 
 
