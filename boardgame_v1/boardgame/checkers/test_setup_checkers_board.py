@@ -8,7 +8,11 @@ class TestCreateCheckersGame(TestCase):
 
     def test_create_8x8(self):
         checker = lambda: Piece()
-        checkers = CheckersBuilder().build()
+        checkers = (
+           CheckersBuilder()
+           .new_game()
+           .build()
+        )
 
         self.assertEqual(
             checkers,
