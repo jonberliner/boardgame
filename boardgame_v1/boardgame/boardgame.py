@@ -1,14 +1,22 @@
-import abc
-import attr
+from dataclasses import dataclass
+from typing import List
 
 
-class Board(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def make_move(self, move: Move):
-        pass
+@dataclass
+class Piece(object):
+    pass
 
-@attr.s(frozen=True)
+
+@dataclass
+class Space(object):
+    piece: Piece = None
+
+
+@dataclass
+class Board(object):
+    grid: List[List[Space]]
+
+
+@dataclass
 class Game(object):
-    board = attr.ib(
-        validator=attr.validators.instance_of(Board)
-    )
+    board: Board
