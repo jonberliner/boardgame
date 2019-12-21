@@ -16,13 +16,13 @@ class ValueObject:
 
 forward_left_one = MovementType(
     vectors=[
-        Vector(Direction.UP, 1),
+        Vector(Direction.UP, -1),
         Vector(Direction.RIGHT, -1)
     ]
 )
 forward_right_one = MovementType(
     vectors=[
-        Vector(Direction.UP, 1),
+        Vector(Direction.UP, -1),
         Vector(Direction.RIGHT, 1)
     ]
 )
