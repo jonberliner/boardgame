@@ -1,6 +1,6 @@
 from dataclasses import dataclass, replace
 
-from boardgame_v1.boardgame.boardgame import Game, Board, Piece, Space
+from boardgame_v1.boardgame.boardgame import Game, Board, Piece, Space, Player
 
 
 @dataclass
@@ -11,21 +11,24 @@ class ValueObject:
 
 @dataclass
 class CheckersBuilder(ValueObject):
+    player1: Player = Player(name="Player1")
+    player2: Player = Player(name="Player2")
     board: Board = None
 
     def new_game(self):
-        checker = lambda: Piece()
+        checker_p1 = lambda: Piece(player=self.player1)
+        checker_p2 = lambda: Piece(player=self.player2)
         return self.copy(
             board=Board(
                 [
-                    [Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker())],
-                    [Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space()],
+                    [Space(), Space(checker_p2()), Space(), Space(checker_p2()), Space(), Space(checker_p2()), Space(), Space(checker_p2())],
+                    [Space(checker_p2()), Space(), Space(checker_p2()), Space(), Space(checker_p2()), Space(), Space(checker_p2()), Space()],
                     [Space(), Space(), Space(), Space(), Space(), Space(), Space(), Space()],
                     [Space(), Space(), Space(), Space(), Space(), Space(), Space(), Space()],
                     [Space(), Space(), Space(), Space(), Space(), Space(), Space(), Space()],
                     [Space(), Space(), Space(), Space(), Space(), Space(), Space(), Space()],
-                    [Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space()],
-                    [Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker()), Space(), Space(checker())],
+                    [Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space()],
+                    [Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1())],
                 ]
             )
         )

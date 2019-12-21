@@ -3,20 +3,25 @@ from typing import List
 
 
 @dataclass
-class Piece(object):
-    pass
+class Player:
+    name: str
 
 
 @dataclass
-class Space(object):
+class Piece:
+    player: Player
+
+
+@dataclass
+class Space:
     piece: Piece = None
 
 
 @dataclass
-class Board(object):
+class Board:
     grid: List[List[Space]]
 
 
 @dataclass
-class Game(object):
+class Game:
     board: Board
