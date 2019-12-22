@@ -3,6 +3,7 @@ from dataclasses import dataclass, replace
 from boardgame_v1.boardgame.board import Board
 from boardgame_v1.boardgame.game import Game
 from boardgame_v1.boardgame.checkers.checker import checker
+from boardgame_v1.boardgame.move import Move
 from boardgame_v1.boardgame.player import Player
 from boardgame_v1.boardgame.space import Space
 
@@ -36,6 +37,11 @@ class CheckersBuilder(ValueObject):
                     [Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1()), Space(), Space(checker_p1())],
                 ]
             )
+        )
+
+    def move(self, move: Move):
+        return self.copy(
+            board=self.board.make_move(move),
         )
 
     def build(self):
